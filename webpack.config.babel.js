@@ -1,4 +1,3 @@
-import path from 'path';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import autoprefixer from 'autoprefixer';
@@ -9,13 +8,6 @@ const mode = process.env.NODE_ENV || 'development';
 const isNotProdMode = mode !== 'production';
 
 export default {
-  entry: {
-    main: './src/index.js',
-  },
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'js/main.js',
-  },
   module: {
     rules: [
       {
@@ -45,9 +37,7 @@ export default {
     ],
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: 'css/styles.css',
-    }),
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/template.html',
     }),
