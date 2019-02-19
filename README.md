@@ -12,3 +12,13 @@
 ```sh
 make install
 ```
+
+## Develop
+
+```sh
+make develop
+```
+
+## Example
+
+[Surge live demo](https://http://rss-kit.surge.sh/)
