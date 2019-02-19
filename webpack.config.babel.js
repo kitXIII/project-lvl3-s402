@@ -18,6 +18,10 @@ export default {
         },
       },
       {
+        test: /\.min\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
         test: /\.(sa|sc)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
