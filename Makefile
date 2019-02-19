@@ -22,12 +22,8 @@ lint:
 check-types:
 	npx flow
 
-publish:
-	npm publish
-
-publish-patch:
-	npm version patch
-	npm publish
+deploy: build
+	surge ./dist rss-kit.surge.sh
 
 watch:
 	npm run watch
