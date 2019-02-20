@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import init from '../src/js/init';
+import app from '../src/js/app';
 
 beforeEach(async () => {
   const pathToHtml = path.resolve(__dirname, '__fixtures__/index.html');
@@ -9,5 +9,5 @@ beforeEach(async () => {
 });
 
 test('init', () => {
-  init();
+  app();
 });
