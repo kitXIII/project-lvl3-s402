@@ -50,7 +50,10 @@ export default () => {
   });
 
   const renderLists = () => {
-    channels.innerHTML = state.data.map(channel => `<div class="pl-2">${channel.title}</div><hr/>`).join('');
+    channels.innerHTML = state.data.map(channel => `<div class="pl-2">
+      <h5>${channel.title}</h5>
+      <p class="font-weight-light pl-1">${channel.description}</p>
+    </div><hr/>`).join('');
     channels.prepend(channelsHeader);
     const articlesItems = flatten(state.data.map(channel => channel.items));
     articles.innerHTML = articlesItems.map(item => `<div>
