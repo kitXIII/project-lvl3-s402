@@ -2,7 +2,7 @@ import '@babel/polyfill';
 import { watch } from 'melanke-watchjs';
 import { flatten } from 'lodash';
 import State from './AppState';
-import load from './loader';
+import loadFeed from './loader';
 
 const controlleId = 'controlledForm';
 const feedsId = 'feedsList';
@@ -40,10 +40,10 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     state.setOnPending();
-    load(state.inputValue)
-      .then((channel) => {
+    loadFeed(state.inputValue)
+      .then((feed) => {
         const { data } = state;
-        state.data = [channel, ...data];
+        state.data = [feed, ...data];
         state.setOnSuccess();
       })
       .catch((err) => {
