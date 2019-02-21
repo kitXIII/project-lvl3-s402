@@ -15,6 +15,7 @@ export default url => axios.get(url, {
     }
     const domParser = new DOMParser();
     const xml = domParser.parseFromString(resp.data, 'text/xml');
+    console.dir(xml);
     const channel = xml.querySelector('channel');
     return parse(channel.children);
   });

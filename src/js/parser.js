@@ -9,7 +9,7 @@ const parse = (nodes) => {
     },
     title: (node, acc) => ({ ...acc, title: node.textContent }),
     description: (node, acc) => ({ ...acc, description: node.textContent }),
-    link: (node, acc) => ({ ...acc, description: node.textContent }),
+    link: (node, acc) => ({ ...acc, link: node.textContent }),
   };
 
   const result = [...nodes].filter(node => keys(transform).includes(node.tagName))

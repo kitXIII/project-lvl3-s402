@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
+// const corsProxyUrl = 'http://cors.io/?';
 
 axios.interceptors.request.use((config) => {
   if (process.env.NODE_ENV !== 'test') {
