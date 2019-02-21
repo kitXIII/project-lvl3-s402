@@ -12,7 +12,6 @@ channelsHeader.innerText = 'Channels';
 const articlesHeader = document.createElement('h3');
 articlesHeader.innerText = 'Articles';
 const articleModalId = 'articleModal';
-const articleModalHeaderId = 'articleModalLabel';
 const articleModalBodyId = 'articleModalBody';
 
 export default () => {
