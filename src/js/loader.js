@@ -1,8 +1,10 @@
-import axios from './axios';
+import axios from 'axios';
 import isRssMimeType from './utils';
 import parse from './parser';
 
-export default url => axios.get(url, {
+const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
+
+export default url => axios.get(`${corsProxyUrl}${url}`, {
   validateStatus: status => status === 200,
   timeout: 10000,
 })
@@ -13,9 +15,5 @@ export default url => axios.get(url, {
     if (!resp.data) {
       throw new Error('Response data is empty');
     }
-    const domParser = new DOMParser();
-    const xml = domParser.parseFromString(resp.data, 'text/xml');
-    console.dir(xml);
-    const channel = xml.querySelector('channel');
-    return parse(channel.children);
+    return parse(resp.data);
   });

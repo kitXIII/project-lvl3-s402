@@ -5,26 +5,27 @@ import State from './AppState';
 import load from './loader';
 
 const controlleId = 'controlledForm';
-const channelsId = 'channelsList';
+const feedsId = 'feedsList';
+const feedsHeaderId = 'feedsListHeader';
 const articlesId = 'articlesList';
-const channelsHeader = document.createElement('h3');
-channelsHeader.innerText = 'Channels';
-const articlesHeader = document.createElement('h3');
-articlesHeader.innerText = 'Articles';
+const articlesHeaderId = 'articlesListHeader';
 const articleModalId = 'articleModal';
 
 export default () => {
   const form = document.querySelector(`#${controlleId}`);
   const input = form.querySelector('[data-rss="input"]');
   const submit = form.querySelector('[type="submit"]');
-  const feedback = form.querySelector('[data-rss="feedback"]');
-  const channels = document.querySelector(`#${channelsId}`);
+  const feedbackError = form.querySelector('[data-rss="feedback-error"]');
+  const feedbackInfo = form.querySelector('[data-rss="feedback-info"]');
+  const feeds = document.querySelector(`#${feedsId}`);
+  const feedsHeader = document.querySelector(`#${feedsHeaderId}`);
   const articles = document.querySelector(`#${articlesId}`);
+  const articlesHeader = document.querySelector(`#${articlesHeaderId}`);
   const modal = document.querySelector(`#${articleModalId}`);
 
   if (!input
     || !submit
-    || !channels
+    || !feeds
     || !articles) {
     console.error('Отсутствуют элементы управления');
     return;
@@ -33,20 +34,20 @@ export default () => {
   const state = new State();
 
   input.addEventListener('input', (e) => {
-    state.setValue(e.target.value);
+    state.setInputValue(e.target.value);
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    state.request();
-    load(state.value)
+    state.setOnPending();
+    load(state.inputValue)
       .then((channel) => {
         const { data } = state;
         state.data = [channel, ...data];
-        state.success();
+        state.setOnSuccess();
       })
       .catch((err) => {
-        state.reject('Ошибка подключения');
+        state.setOnRejected('Ошибка подключения');
         console.error(err);
       });
   });
@@ -56,32 +57,30 @@ export default () => {
       && e.target.dataset.channel
       && e.target.dataset.index) {
       const item = state.data[e.target.dataset.channel].items[e.target.dataset.index];
-      state.modal = {
-        title: item.title || '',
-        description: item.description || '',
-      };
+      state.modal = item;
     }
   });
 
   const renderLists = () => {
-    channels.innerHTML = state.data.map(channel => `<div class="pl-2">
-      <h5>${channel.title}</h5>
-      <p class="font-weight-light pl-1">${channel.description}</p>
-    </div><hr/>`).join('');
-    channels.prepend(channelsHeader);
+    feedsHeader.classList.toggle('d-none', state.data.length === 0);
+    articlesHeader.classList.toggle('d-none', state.data.length === 0);
+    feeds.innerHTML = state.data.map(channel => `
+      <div class="pl-2">
+        <h5>${channel.title}</h5>
+        <p class="font-weight-light pl-1">${channel.description}</p>
+      </div><hr/>`).join('');
     const articlesItemsRaw = state.data.map((channel, iChannel) => channel.items.map((item, i) => `
       <div class="d-flex justify-content-between align-items-center py-1">
         <a href="${item.link}">${item.title}</a>
-        <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#${articleModalId}" data-channel="${iChannel}" data-index="${i}">
+        <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" data-target="#${articleModalId}" data-channel="${iChannel}" data-index="${i}">
           view
         </button>
       </div>`));
     articles.innerHTML = flatten(articlesItemsRaw).join('');
-    articles.prepend(articlesHeader);
   };
 
-  watch(state, 'value', () => {
-    input.value = state.value;
+  watch(state, 'inputValue', () => {
+    input.value = state.inputValue;
   });
 
   watch(state, 'isValidForm', () => {
@@ -100,19 +99,28 @@ export default () => {
     input.disabled = state.isInputBlocked;
   });
 
-  watch(state, 'errorMessage', () => {
-    feedback.textContent = state.errorMessage;
+  watch(state, 'infoMessage', () => {
+    if (feedbackInfo) {
+      feedbackInfo.textContent = state.infoMessage;
+    }
   });
 
-  watch(state, 'data', () => {
-    renderLists();
+  watch(state, 'errorMessage', () => {
+    if (feedbackError) {
+      feedbackError.textContent = state.errorMessage;
+    }
   });
+
+  watch(state, 'data', renderLists);
 
   watch(state, 'modal', () => {
-    const modalBody = modal.querySelector('.modal-body');
-    const modalTitle = modal.querySelector('.modal-title');
-    modalBody.innerHTML = state.modal.description;
-    modalTitle.innerText = state.modal.title;
+    if (modal) {
+      const modalBody = modal.querySelector('.modal-body');
+      const modalTitle = modal.querySelector('.modal-title');
+      modalBody.innerHTML = state.modal.description;
+      modalTitle.innerText = state.modal.title;
+    }
   });
+
   state.init();
 };

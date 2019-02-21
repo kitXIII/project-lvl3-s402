@@ -21,4 +21,9 @@ const parse = (nodes) => {
   return result;
 };
 
-export default parse;
+export default (rawData) => {
+  const domParser = new DOMParser();
+  const xml = domParser.parseFromString(rawData, 'text/xml');
+  const channel = xml.querySelector('channel');
+  return parse(channel.children);
+};
