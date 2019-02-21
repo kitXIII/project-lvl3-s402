@@ -11,6 +11,9 @@ const channelsHeader = document.createElement('h3');
 channelsHeader.innerText = 'Channels';
 const articlesHeader = document.createElement('h3');
 articlesHeader.innerText = 'Articles';
+const articleModalId = 'articleModal';
+const articleModalHeaderId = 'articleModalLabel';
+const articleModalBodyId = 'articleModalBody';
 
 export default () => {
   const form = document.querySelector(`#${controlleId}`);
@@ -55,9 +58,12 @@ export default () => {
       <p class="font-weight-light pl-1">${channel.description}</p>
     </div><hr/>`).join('');
     channels.prepend(channelsHeader);
-    const articlesItems = flatten(state.data.map(channel => channel.items));
-    articles.innerHTML = articlesItems.map(item => `<div>
-      <a class="d-block" href="${item.link}">${item.title}</a>
+    const articlesItems = flatten(data.map(channel => channel.items));
+    articles.innerHTML = articlesItems.map(item => `<div class="d-flex justify-content-between align-items-center py-1">
+      <a href="${item.link}">${item.title}</a> \
+      <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#${articleModalId}">
+        view
+      </button>
     </div>`).join('');
     articles.prepend(articlesHeader);
   };
