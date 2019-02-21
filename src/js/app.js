@@ -1,7 +1,7 @@
 import '@babel/polyfill';
-// import { watch } from 'melanke-watchjs';
+import { watch } from 'melanke-watchjs';
 import { flatten } from 'lodash';
-import FormControl from './FormControl';
+import State from './AppState';
 import load from './loader';
 
 const controlleId = 'controlledForm';
@@ -28,66 +28,58 @@ export default () => {
     return;
   }
 
-  let data = [];
-  const formControl = new FormControl();
+  const state = new State();
 
   input.addEventListener('input', (e) => {
-    formControl.setValue(e.target.value);
-    input.value = formControl.value;
+    state.setValue(e.target.value);
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    formControl.request();
-    load(formControl.value)
+    state.request();
+    load(state.value)
       .then((channel) => {
-        data = [...data, channel];
-        formControl.saveValueToBlacklist();
-        formControl.accept();
+        const { data } = state;
+        state.data = [...data, channel];
+        state.success();
       })
       .catch((err) => {
-        formControl.reject('Ошибка подключения');
+        state.reject('Ошибка подключения');
         console.error(err);
       });
   });
 
   const renderLists = () => {
-    channels.innerHTML = data.map(channel => `<div class="pl-2">${channel.title}</div><hr/>`).join('');
+    channels.innerHTML = state.data.map(channel => `<div class="pl-2">${channel.title}</div><hr/>`).join('');
     channels.prepend(channelsHeader);
-    const articlesItems = flatten(data.map(channel => channel.items));
+    const articlesItems = flatten(state.data.map(channel => channel.items));
     articles.innerHTML = articlesItems.map(item => `<div>
       <a class="d-block" href="${item.link}">${item.title}</a>
     </div>`).join('');
     articles.prepend(articlesHeader);
   };
-  // formControl.observe('onTransition', () => {
-  //   input.value = formControl.value;
-  // });
 
-  formControl.observe('onEnterState', () => console.log(formControl.state));
-  formControl.observe('onInit', () => {
-    input.value = '';
-    submit.disabled = true;
-    input.disabled = false;
+  watch(state, 'value', () => {
+    input.value = state.value;
   });
-  formControl.observe('onInvalid', () => {
-    submit.disabled = true;
-    input.disabled = false;
-    input.classList.add('is-invalid');
-    if (feedback) {
-      feedback.textContent = formControl.errorMessage;
+  watch(state, 'isValidForm', () => {
+    if (state.isValidForm) {
+      input.classList.remove('is-invalid');
+    } else {
+      input.classList.add('is-invalid');
     }
   });
-  formControl.observe('onValid', () => {
-    submit.disabled = false;
-    input.classList.remove('is-invalid');
+  watch(state, 'isButtonBlocked', () => {
+    submit.disabled = state.isButtonBlocked;
   });
-  formControl.observe('onPending', () => {
-    submit.disabled = true;
-    input.disabled = true;
+  watch(state, 'isInputBlocked', () => {
+    input.disabled = state.isInputBlocked;
   });
-  formControl.observe('onAccept', () => {
+  watch(state, 'errorMessage', () => {
+    feedback.textContent = state.errorMessage;
+  });
+  watch(state, 'data', () => {
     renderLists();
   });
-  formControl.init();
+  state.init();
 };
