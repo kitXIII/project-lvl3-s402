@@ -3,11 +3,12 @@ import parse from './parser';
 
 const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
 
-const hasRssHeader = (res) => {
+const hasRssOrXmlHeader = (res) => {
   if (!res.headers['content-type']) {
     throw new Error('Cant validate mime type');
   }
-  return res.headers['content-type'].split(';').map(elem => elem.trim()).includes('application/rss+xml');
+  const headers = res.headers['content-type'].split(';').map(elem => elem.trim());
+  return headers.includes('application/rss+xml') || headers.includes('text/xml');
 };
 
 export default url => axios.get(`${corsProxyUrl}${url}`, {
@@ -15,7 +16,7 @@ export default url => axios.get(`${corsProxyUrl}${url}`, {
   timeout: 10000,
 })
   .then((resp) => {
-    if (!hasRssHeader(resp)) {
+    if (!hasRssOrXmlHeader(resp)) {
       throw new Error('It is not rss address');
     }
     if (!resp.data) {

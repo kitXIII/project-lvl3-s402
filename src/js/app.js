@@ -42,8 +42,7 @@ export default () => {
     state.setOnPending();
     loadFeed(state.inputValue)
       .then((feed) => {
-        const { data } = state;
-        state.data = [feed, ...data];
+        state.addFeed(feed);
         state.setOnSuccess();
       })
       .catch((err) => {
@@ -52,7 +51,7 @@ export default () => {
       });
   });
 
-  window.modalButtonClickHandler = (button) => {
+  document.modalButtonClickHandler = (button) => {
     const channel = button.dataset.channel || 0;
     const index = button.dataset.index || 0;
     const item = state.data[channel].items[index];
@@ -119,6 +118,4 @@ export default () => {
       modalTitle.innerText = state.modal.title;
     }
   });
-
-  state.init();
 };

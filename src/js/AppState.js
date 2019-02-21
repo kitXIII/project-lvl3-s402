@@ -4,9 +4,6 @@ export default class AppState {
   constructor(data) {
     this.addedFeedList = new Set();
     this.data = data || [];
-  }
-
-  init() {
     this.inputValue = '';
     this.isValidForm = true;
     this.isInputBlocked = false;
@@ -37,6 +34,11 @@ export default class AppState {
     this.isButtonBlocked = false;
   }
 
+  addFeed(feed) {
+    const { data } = this;
+    this.data = [feed, ...data];
+  }
+
   setOnPending() {
     this.isInputBlocked = true;
     this.isButtonBlocked = true;
@@ -55,6 +57,11 @@ export default class AppState {
     if (this.inputValue) {
       this.addedFeedList.add(this.inputValue);
     }
-    this.init();
+    this.inputValue = '';
+    this.isValidForm = true;
+    this.isInputBlocked = false;
+    this.isButtonBlocked = true;
+    this.errorMessage = '';
+    this.infoMessage = '';
   }
 }
