@@ -13,9 +13,6 @@ build:
 	rm -rf dist
 	NODE_ENV=production npx webpack
 
-test:
-	npm test
-
 lint:
 	npx eslint .
 
@@ -24,8 +21,3 @@ check-types:
 
 deploy: build
 	surge ./dist rss-kit.surge.sh
-
-watch:
-	npm run watch
-
-.PHONY: test
