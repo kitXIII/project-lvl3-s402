@@ -9,6 +9,7 @@ export default class AppState {
     this.isInputBlocked = null;
     this.isButtonBlocked = null;
     this.errorMessage = null;
+    this.modal = {};
   }
 
   init() {
@@ -17,6 +18,7 @@ export default class AppState {
     this.isInputBlocked = false;
     this.isButtonBlocked = true;
     this.errorMessage = '';
+    this.modal = { title: '', description: '' };
   }
 
   setValue(input) {
@@ -47,7 +49,6 @@ export default class AppState {
   request() {
     this.isInputBlocked = true;
     this.isButtonBlocked = true;
-    console.log(this);
   }
 
   reject(message) {
@@ -55,14 +56,12 @@ export default class AppState {
     this.isValidForm = false;
     this.isButtonBlocked = true;
     this.isInputBlocked = false;
-    console.log(this);
   }
 
   success() {
     if (this.value) {
       this.blacklist.add(this.value);
     }
-    console.log(this);
     this.init();
   }
 }
