@@ -1,5 +1,3 @@
-import validator from 'validator';
-
 export default class AppState {
   constructor(data) {
     this.addedFeedList = new Set();
@@ -13,36 +11,31 @@ export default class AppState {
     this.modal = {};
   }
 
-  setInputValue(input) {
-    const tirmedInput = validator.trim(input);
-    const url = validator.stripLow(tirmedInput);
-    this.inputValue = url;
-    if (!validator.isURL(url)) {
-      this.errorMessage = 'Неверно заполнено поле ввода';
-      this.isValidForm = false;
-      this.isButtonBlocked = true;
-      return;
-    }
-    if (this.addedFeedList.has(url)) {
-      this.errorMessage = 'Такой канал уже присутствует в списке';
-      this.isValidForm = false;
-      this.isButtonBlocked = true;
-      return;
-    }
-    this.errorMessage = '';
-    this.isValidForm = true;
-    this.isButtonBlocked = false;
-  }
-
   addFeed(feed) {
     const { data } = this;
     this.data = [feed, ...data];
   }
 
-  setOnPending() {
+  setInputValue(value) {
+    this.inputValue = value;
+  }
+
+  setOnInvalid(message) {
+    this.errorMessage = message || '';
+    this.isValidForm = false;
+    this.isButtonBlocked = true;
+  }
+
+  setOnValid() {
+    this.errorMessage = '';
+    this.isValidForm = true;
+    this.isButtonBlocked = false;
+  }
+
+  setOnPending(message) {
     this.isInputBlocked = true;
     this.isButtonBlocked = true;
-    this.infoMessage = 'Загружаю канал...';
+    this.infoMessage = message || '';
   }
 
   setOnRejected(message) {

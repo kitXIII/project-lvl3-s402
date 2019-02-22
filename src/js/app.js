@@ -1,6 +1,7 @@
 import '@babel/polyfill';
 import { watch } from 'melanke-watchjs';
 import { flatten } from 'lodash';
+import validator from 'validator';
 import State from './AppState';
 import loadFeed from './loader';
 
@@ -34,12 +35,19 @@ export default () => {
   const state = new State();
 
   input.addEventListener('input', (e) => {
+    if (!validator.isURL(e.target.value)) {
+      return state.setOnInvalid('Неверно заполнено поле ввода');
+    }
+    if (state.addedFeedList.has(e.target.value)) {
+      return state.setOnInvalid('Такой канал уже присутствует в списке');
+    }
     state.setInputValue(e.target.value);
+    return state.setOnValid();
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    state.setOnPending();
+    state.setOnPending('Загружаю канал...');
     loadFeed(state.inputValue)
       .then((feed) => {
         state.addFeed(feed);
