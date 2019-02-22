@@ -79,7 +79,7 @@ export default () => {
     const articlesItemsRaw = state.data.map((channel, iChannel) => channel.items.map((item, i) => `
       <div class="d-flex justify-content-between align-items-center py-1">
         <a href="${item.link}">${item.title}</a>
-        <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" data-target="#${articleModalId}" data-channel="${iChannel}" data-index="${i}" onclick="modalButtonClickHandler(this)">
+        <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" data-target="#${articleModalId}" data-channel="${iChannel}" data-index="${i}">
           view
         </button>
       </div>`));
