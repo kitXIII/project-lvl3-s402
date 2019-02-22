@@ -1,29 +1,17 @@
-import { keys } from 'lodash';
-
-const parse = (nodes) => {
-  const items = [];
-  const transform = {
-    item: (node, acc) => {
-      items.push(parse(node.children));
-      return acc;
-    },
-    title: (node, acc) => ({ ...acc, title: node.textContent }),
-    description: (node, acc) => ({ ...acc, description: node.textContent }),
-    link: (node, acc) => ({ ...acc, link: node.textContent }),
-  };
-
-  const result = [...nodes].filter(node => keys(transform).includes(node.tagName))
-    .reduce((acc, node) => transform[node.tagName](node, acc), {});
-
-  if (items.length) {
-    return { ...result, items };
-  }
-  return result;
+const tags = {
+  channel: ['title', 'description'],
+  item: ['title', 'description', 'link'],
 };
+
+const getElementContent = elem => tags[elem.tagName].reduce((acc, tag) => {
+  const child = elem.querySelector(tag);
+  return child ? { ...acc, [tag]: child.textContent } : acc;
+}, {});
 
 export default (rawData) => {
   const domParser = new DOMParser();
   const xml = domParser.parseFromString(rawData, 'text/xml');
-  const channel = xml.querySelector('channel');
-  return parse(channel.children);
+  const items = [...xml.querySelectorAll('item')].map(item => getElementContent(item));
+  const channel = getElementContent(xml.querySelector('channel'));
+  return { ...channel, items };
 };
