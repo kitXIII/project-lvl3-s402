@@ -13,7 +13,16 @@ const articlesId = 'articlesList';
 const articlesHeaderId = 'articlesListHeader';
 const articleModalId = 'articleModal';
 
+const messages = {
+  inputInvalid: 'Неверно заполнено поле ввода',
+  pending: 'Загрузка канала...',
+  rejected: 'Ошибка загрузки',
+  duplicate: 'Такой канал уже присутствует в списке',
+};
+
 export default () => {
+  const state = new State();
+
   const form = document.querySelector(`#${controlleId}`);
   const input = form.querySelector('[data-rss="input"]');
   const submit = form.querySelector('[type="submit"]');
@@ -25,22 +34,14 @@ export default () => {
   const articlesHeader = document.querySelector(`#${articlesHeaderId}`);
   const modal = document.querySelector(`#${articleModalId}`);
 
-  if (!input
-    || !submit
-    || !feeds
-    || !articles) {
-    console.error('Отсутствуют элементы управления');
-    return;
-  }
-
-  const state = new State();
-
   input.addEventListener('input', (e) => {
     if (!validator.isURL(e.target.value)) {
-      return state.setOnInvalid('Неверно заполнено поле ввода');
+      state.setInputValue(e.target.value);
+      return state.setOnInvalid();
     }
     if (state.addedFeedList.has(e.target.value)) {
-      return state.setOnInvalid('Такой канал уже присутствует в списке');
+      state.setInputValue(e.target.value);
+      return state.setOnError('duplicate');
     }
     state.setInputValue(e.target.value);
     return state.setOnValid();
@@ -48,14 +49,14 @@ export default () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    state.setOnPending('Загружаю канал...');
+    state.setOnPending();
     loadFeed(state.inputValue)
       .then((feed) => {
         state.addFeed(feed);
-        state.setOnSuccess();
+        state.done();
       })
       .catch((err) => {
-        state.setOnRejected('Ошибка подключения');
+        state.setOnError('rejected');
         console.error(err);
       });
   });
@@ -91,36 +92,42 @@ export default () => {
   //   const feedsToLoad = difference([...state.addedFeedList], [...feedsOnLoading]);
   // };
 
+  const stateHandlers = {
+    init: () => {
+      input.classList.remove('is-invalid');
+      input.disabled = false;
+      submit.disabled = true;
+      feedbackError.textContent = '';
+      feedbackInfo.textContent = '';
+    },
+    onValid: () => {
+      input.classList.remove('is-invalid');
+      submit.disabled = false;
+      feedbackError.textContent = '';
+    },
+    onInvalid: () => {
+      input.classList.add('is-invalid');
+      submit.disabled = true;
+      feedbackError.textContent = messages.inputInvalid;
+    },
+    onError: () => {
+      input.classList.add('is-invalid');
+      input.disabled = false;
+      submit.disabled = true;
+      feedbackError.textContent = messages[state.errorType] || '';
+      feedbackInfo.textContent = '';
+    },
+    onPending: () => {
+      input.disabled = true;
+      submit.disabled = true;
+      feedbackInfo.textContent = messages.pending;
+    },
+  };
+
+  watch(state, 'state', () => stateHandlers[state.state]());
+
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
-  });
-
-  watch(state, 'isValidForm', () => {
-    if (state.isValidForm) {
-      input.classList.remove('is-invalid');
-    } else {
-      input.classList.add('is-invalid');
-    }
-  });
-
-  watch(state, 'isButtonBlocked', () => {
-    submit.disabled = state.isButtonBlocked;
-  });
-
-  watch(state, 'isInputBlocked', () => {
-    input.disabled = state.isInputBlocked;
-  });
-
-  watch(state, 'infoMessage', () => {
-    if (feedbackInfo) {
-      feedbackInfo.textContent = state.infoMessage;
-    }
-  });
-
-  watch(state, 'errorMessage', () => {
-    if (feedbackError) {
-      feedbackError.textContent = state.errorMessage;
-    }
   });
 
   watch(state, 'data', renderLists);
