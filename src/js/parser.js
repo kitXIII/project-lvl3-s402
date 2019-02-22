@@ -11,7 +11,7 @@ const getElementContent = elem => tags[elem.tagName].reduce((acc, tag) => {
 export default (rawData) => {
   const domParser = new DOMParser();
   const xml = domParser.parseFromString(rawData, 'text/xml');
-  const items = [...xml.querySelectorAll('item')].map(item => getElementContent(item));
+  const items = [...xml.querySelectorAll('item')].map(getElementContent);
   const channel = getElementContent(xml.querySelector('channel'));
   return { ...channel, items };
 };
