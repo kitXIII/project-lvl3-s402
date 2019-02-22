@@ -61,13 +61,12 @@ export default () => {
       });
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const modalButtonClickHandler = (button) => {
-    const channel = button.dataset.channel || 0;
-    const index = button.dataset.index || 0;
-    const item = state.data[channel].items[index];
-    state.modal = item;
-  };
+  articles.addEventListener('click', (e) => {
+    if (e.target.dataset.channel && e.target.dataset.index) {
+      const item = state.data[e.target.dataset.channel].items[e.target.dataset.index];
+      state.modal = item;
+    }
+  });
 
   const renderLists = () => {
     feedsHeader.classList.toggle('d-none', state.data.length === 0);
