@@ -1,5 +1,6 @@
 import '@babel/polyfill';
 import { watch } from 'melanke-watchjs';
+// import { flatten, difference } from 'lodash';
 import { flatten } from 'lodash';
 import validator from 'validator';
 import State from './AppState';
@@ -59,7 +60,8 @@ export default () => {
       });
   });
 
-  document.modalButtonClickHandler = (button) => {
+  // eslint-disable-next-line no-unused-vars
+  const modalButtonClickHandler = (button) => {
     const channel = button.dataset.channel || 0;
     const index = button.dataset.index || 0;
     const item = state.data[channel].items[index];
@@ -83,6 +85,11 @@ export default () => {
       </div>`));
     articles.innerHTML = flatten(articlesItemsRaw).join('');
   };
+
+  // const feedsOnLoading = new Set();
+  // const updateFeeds = () => {
+  //   const feedsToLoad = difference([...state.addedFeedList], [...feedsOnLoading]);
+  // };
 
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
