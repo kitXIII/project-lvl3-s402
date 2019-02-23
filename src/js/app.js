@@ -1,6 +1,8 @@
 import '@babel/polyfill';
 import { watch } from 'melanke-watchjs';
-// import { flatten, difference } from 'lodash';
+import {
+  difference, unionBy, unionWith, isEqual,
+} from 'lodash';
 import validator from 'validator';
 import State from './AppState';
 import loadFeed from './loader';
@@ -121,9 +123,27 @@ export default () => {
     modalBody.innerHTML = state.rssItemsModalContent.description;
   });
 
+  const updateFeeds = () => {
+    const feedsToLoad = difference([...state.addedFeedList], [...state.feedsOnLoading]);
+    feedsToLoad.forEach(feed => state.feedsOnLoading.add(feed));
+    // console.log('Feeds to run load count: ', feedsToLoad.length);
+    // console.log('Feeds on loading count', state.feedsOnLoading.length);
+    const feedsLoadPromises = feedsToLoad.map(feed => loadFeed(feed)
+      .then((loadedFeed) => {
+        const currentFeed = state.data.find(elem => elem.title === loadedFeed.title);
+        const items = unionWith(currentFeed.items, loadedFeed.items, isEqual);
+        state.setFeeds(unionBy([{ ...loadedFeed, items }], state.data, 'title'));
+      })
+      .catch(console.error)
+      .finally(() => state.feedsOnLoading.delete(feed)));
+    return Promise.all(feedsLoadPromises);
+  };
 
-  // const feedsOnLoading = new Set();
-  // const updateFeeds = () => {
-  //   const feedsToLoad = difference([...state.addedFeedList], [...feedsOnLoading]);
-  // };
+  setInterval(() => updateFeeds(), 5000);
+
+  // const arr1 = [{ x: 0, w: 1234 }, { x: 3, d: 5, r: 11 }, { x: 1, y: 'old' }, { z: 6 }];
+  // const arr2 = [{ x: 1, y: 'new' }];
+  // const arr3 = unionBy(arr2, arr1, 'x');
+
+  // console.log(sortBy(arr3, o => o.x));
 };

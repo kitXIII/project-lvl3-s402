@@ -1,6 +1,6 @@
 const tags = {
-  channel: ['title', 'description'],
-  item: ['title', 'description', 'link'],
+  channel: ['title', 'description', 'pubDate'],
+  item: ['title', 'description', 'link', 'pubDate'],
 };
 
 const getElementContent = elem => tags[elem.tagName].reduce((acc, tag) => {

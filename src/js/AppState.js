@@ -1,6 +1,7 @@
 export default class AppState {
   constructor(data) {
     this.addedFeedList = new Set();
+    this.feedsOnLoading = new Set();
     this.data = data || [];
     this.inputValue = '';
     this.state = 'init';
@@ -11,6 +12,10 @@ export default class AppState {
   addFeed(feed) {
     const { data } = this;
     this.data = [feed, ...data];
+  }
+
+  setFeeds(data) {
+    this.data = data;
   }
 
   setInputValue(value) {
