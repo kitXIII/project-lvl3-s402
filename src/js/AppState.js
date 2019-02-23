@@ -5,7 +5,7 @@ export default class AppState {
     this.inputValue = '';
     this.state = 'init';
     this.errorType = '';
-    this.modal = {};
+    this.rssItemsModalContent = {};
   }
 
   addFeed(feed) {
@@ -34,11 +34,11 @@ export default class AppState {
     this.state = 'onPending';
   }
 
-  done() {
+  setOnSuccess() {
     if (this.inputValue) {
       this.addedFeedList.add(this.inputValue);
     }
     this.inputValue = '';
-    this.state = 'init';
+    this.state = 'onSuccess';
   }
 }
