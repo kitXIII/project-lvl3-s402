@@ -65,7 +65,7 @@ export default () => {
 
   articles.addEventListener('click', (e) => {
     if (e.target.dataset.channel && e.target.dataset.index) {
-      const { title, description } = state.data[e.target.dataset.channel]
+      const { title, description } = state.feeds[e.target.dataset.channel]
         .items[e.target.dataset.index];
       state.rssItemsModalContent = { title, description };
     }
@@ -109,11 +109,11 @@ export default () => {
     input.value = state.inputValue;
   });
 
-  watch(state, 'data', () => {
-    feedsHeader.classList.toggle('d-none', state.data.length === 0);
-    articlesHeader.classList.toggle('d-none', state.data.length === 0);
-    feeds.innerHTML = renderFeedTitles(state.data);
-    articles.innerHTML = renderFeedItems(state.data, articlesModalId);
+  watch(state, 'feeds', () => {
+    feedsHeader.classList.toggle('d-none', state.feeds.length === 0);
+    articlesHeader.classList.toggle('d-none', state.feeds.length === 0);
+    feeds.innerHTML = renderFeedTitles(state.feeds);
+    articles.innerHTML = renderFeedItems(state.feeds, articlesModalId);
   });
 
   watch(state, 'rssItemsModalContent', () => {
@@ -130,9 +130,9 @@ export default () => {
     // console.log('Feeds on loading count', state.feedsOnLoading.length);
     const feedsLoadPromises = feedsToLoad.map(feed => loadFeed(feed)
       .then((loadedFeed) => {
-        const currentFeed = state.data.find(elem => elem.title === loadedFeed.title);
+        const currentFeed = state.feeds.find(elem => elem.title === loadedFeed.title);
         const items = unionWith(currentFeed.items, loadedFeed.items, isEqual);
-        state.setFeeds(unionBy([{ ...loadedFeed, items }], state.data, 'title'));
+        state.setFeeds(unionBy([{ ...loadedFeed, items }], state.feeds, 'title'));
       })
       .catch(console.error)
       .finally(() => state.feedsOnLoading.delete(feed)));
@@ -140,10 +140,4 @@ export default () => {
   };
 
   setInterval(() => updateFeeds(), 5000);
-
-  // const arr1 = [{ x: 0, w: 1234 }, { x: 3, d: 5, r: 11 }, { x: 1, y: 'old' }, { z: 6 }];
-  // const arr2 = [{ x: 1, y: 'new' }];
-  // const arr3 = unionBy(arr2, arr1, 'x');
-
-  // console.log(sortBy(arr3, o => o.x));
 };
