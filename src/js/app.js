@@ -29,7 +29,9 @@ export default () => {
   const input = form.querySelector('[data-rss="input"]');
   const submit = form.querySelector('[type="submit"]');
   const feedbackError = form.querySelector('[data-rss="feedback-error"]');
+  const feedbackErrorText = form.querySelector('[data-rss="feedback-error-msg"]');
   const feedbackInfo = form.querySelector('[data-rss="feedback-info"]');
+  const feedbackInfoText = form.querySelector('[data-rss="feedback-info-msg"]');
   const feeds = document.querySelector(`#${feedsId}`);
   const feedsHeader = document.querySelector(`#${feedsHeaderId}`);
   const articles = document.querySelector(`#${articlesId}`);
@@ -75,31 +77,34 @@ export default () => {
     onValid: () => {
       input.classList.remove('is-invalid');
       submit.disabled = false;
-      feedbackError.textContent = '';
+      feedbackError.hidden = true;
     },
     onInvalid: () => {
       input.classList.add('is-invalid');
       submit.disabled = true;
-      feedbackError.textContent = messages.inputInvalid;
+      feedbackErrorText.textContent = messages.inputInvalid;
+      feedbackError.hidden = false;
     },
     onError: () => {
       input.classList.add('is-invalid');
       input.disabled = false;
       submit.disabled = true;
-      feedbackError.textContent = messages[state.errorType] || '';
-      feedbackInfo.textContent = '';
+      feedbackErrorText.textContent = messages[state.errorType] || '';
+      feedbackError.hidden = false;
+      feedbackInfo.hidden = true;
     },
     onPending: () => {
       input.disabled = true;
       submit.disabled = true;
-      feedbackInfo.textContent = messages.pending;
+      feedbackInfoText.textContent = messages.pending;
+      feedbackInfo.hidden = false;
     },
     onSuccess: () => {
       input.classList.remove('is-invalid');
       input.disabled = false;
       submit.disabled = true;
-      feedbackError.textContent = '';
-      feedbackInfo.textContent = '';
+      feedbackError.hidden = true;
+      feedbackInfo.hidden = true;
     },
   };
 

@@ -28,9 +28,17 @@
         <div class="row pt-2">
           <div class="col-md-9 mb-2 mb-md-0">
             <input class="form-control mb-2" type="text" data-rss="input">
-            <div class="font-weight-light text-danger" data-rss="feedback-error">
+            <div data-rss="feedback-error" hidden>
+              <div class='text-danger d-flex align-items-center px-2'>
+                <span class="font-weight-light" data-rss="feedback-error-msg">Error</span>
+                <!-- <div class="spinner-grow ml-auto"></div> -->
+              </div>
             </div>
-            <div class="font-weight-light text-success" data-rss="feedback-info">
+            <div data-rss="feedback-info" hidden>
+              <div class='text-success d-flex align-items-center px-2'>
+                <span class="font-weight-light" data-rss="feedback-info-msg">Loading...</span>
+                <div class="spinner-border ml-auto"></div>
+              </div>
             </div>
           </div>
           <div class="col-md-3">
