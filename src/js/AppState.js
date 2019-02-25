@@ -1,6 +1,6 @@
 export default class AppState {
-  constructor() {
-    this.addedFeedList = new Set();
+  constructor(feedUrls = []) {
+    this.addedFeedList = new Set(feedUrls);
     this.feedsOnLoading = new Set();
     this.feeds = [];
     this.inputValue = '';

@@ -7,6 +7,7 @@ import validator from 'validator';
 import State from './AppState';
 import loadFeed from './loader';
 import { renderFeedTitles, renderFeedItems } from './renderers';
+import { saveFeedUrls, loadFeedUrls } from './storage';
 
 const controlleId = 'controlledForm';
 const feedsId = 'feedsList';
@@ -23,7 +24,8 @@ const messages = {
 };
 
 export default () => {
-  const state = new State();
+  const savedFeedUrls = loadFeedUrls();
+  const state = new State(savedFeedUrls);
 
   const form = document.querySelector(`#${controlleId}`);
   const input = form.querySelector('[data-rss="input"]');
@@ -58,6 +60,7 @@ export default () => {
       .then((feed) => {
         state.addFeed(feed);
         state.setOnSuccess();
+        saveFeedUrls([...state.addedFeedList]);
       })
       .catch((err) => {
         state.setOnError('rejected');
@@ -131,11 +134,9 @@ export default () => {
   const updateFeeds = () => {
     const feedsToLoad = difference([...state.addedFeedList], [...state.feedsOnLoading]);
     feedsToLoad.forEach(feed => state.feedsOnLoading.add(feed));
-    // console.log('Feeds to run load count: ', feedsToLoad.length);
-    // console.log('Feeds on loading count', state.feedsOnLoading.length);
     const feedsLoadPromises = feedsToLoad.map(feed => loadFeed(feed)
       .then((loadedFeed) => {
-        const currentFeed = state.feeds.find(elem => elem.title === loadedFeed.title);
+        const currentFeed = state.feeds.find(e => e.title === loadedFeed.title) || { items: [] };
         const items = unionWith(currentFeed.items, loadedFeed.items, isEqual);
         state.setFeeds(unionBy([{ ...loadedFeed, items }], state.feeds, 'title'));
       })
@@ -144,5 +145,6 @@ export default () => {
     return Promise.all(feedsLoadPromises);
   };
 
+  updateFeeds(); // initial loadind
   setInterval(() => updateFeeds(), 5000);
 };
