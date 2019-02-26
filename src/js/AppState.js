@@ -46,4 +46,10 @@ export default class AppState {
     this.inputValue = '';
     this.state = 'onSuccess';
   }
+
+  removeFeedByUrl(url) {
+    const { feeds } = this;
+    this.feeds = feeds.filter(feed => feed.url !== url);
+    this.addedFeedList.delete(url);
+  }
 }

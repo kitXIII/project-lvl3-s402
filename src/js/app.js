@@ -6,8 +6,8 @@ import {
 import validator from 'validator';
 import State from './AppState';
 import loadFeed from './loader';
-import { renderFeedTitles, renderFeedItems } from './renderers';
-import { saveFeedUrls, loadFeedUrls } from './storage';
+import { renderFeedTitles, renderFeedItems, renderDelFeedMenu } from './renderers';
+import { saveFeedUrls, loadFeedUrls, removeFeedUrls } from './storage';
 
 const controlleId = 'controlledForm';
 const feedsId = 'feedsList';
@@ -15,6 +15,8 @@ const feedsHeaderId = 'feedsListHeader';
 const articlesId = 'articlesList';
 const articlesHeaderId = 'articlesListHeader';
 const articlesModalId = 'articleModal';
+const deleteFeedMenuId = 'dropdownDelFeedMenu';
+const deleteFeedListId = 'dropdownDelFeedList';
 
 const messages = {
   inputInvalid: 'Неверно заполнено поле ввода',
@@ -39,6 +41,8 @@ export default () => {
   const articles = document.querySelector(`#${articlesId}`);
   const articlesHeader = document.querySelector(`#${articlesHeaderId}`);
   const modal = document.querySelector(`#${articlesModalId}`);
+  const deleteFeedMenu = document.querySelector(`#${deleteFeedMenuId}`);
+  const deleteFeedList = document.querySelector(`#${deleteFeedListId}`);
 
   input.addEventListener('input', (e) => {
     if (!validator.isURL(e.target.value)) {
@@ -56,9 +60,11 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     state.setOnPending();
-    loadFeed(state.inputValue)
+    const url = state.inputValue;
+    loadFeed(url)
       .then((feed) => {
-        state.addFeed(feed);
+        const markedFeed = { ...feed, url };
+        state.addFeed(markedFeed);
         state.setOnSuccess();
         saveFeedUrls([...state.addedFeedList]);
       })
@@ -76,6 +82,15 @@ export default () => {
       const { title, description } = state.feeds[elem.dataset.channel]
         .items[elem.dataset.index];
       state.rssItemsModalContent = { title, description };
+    }
+  });
+
+  deleteFeedMenu.addEventListener('click', (e) => {
+    console.log(e.target.dataset.url);
+    if (e.target.dataset.url) {
+      state.removeFeedByUrl(e.target.dataset.url);
+      removeFeedUrls();
+      saveFeedUrls([...state.addedFeedList]);
     }
   });
 
@@ -123,8 +138,10 @@ export default () => {
   watch(state, 'feeds', () => {
     feedsHeader.classList.toggle('d-none', state.feeds.length === 0);
     articlesHeader.classList.toggle('d-none', state.feeds.length === 0);
+    deleteFeedMenu.classList.toggle('d-none', state.feeds.length === 0);
     feeds.innerHTML = renderFeedTitles(state.feeds);
     articles.innerHTML = renderFeedItems(state.feeds, articlesModalId);
+    deleteFeedList.innerHTML = renderDelFeedMenu(state.feeds);
   });
 
   watch(state, 'rssItemsModalContent', () => {
@@ -141,7 +158,7 @@ export default () => {
       .then((loadedFeed) => {
         const currentFeed = state.feeds.find(e => e.title === loadedFeed.title) || { items: [] };
         const items = unionWith(currentFeed.items, loadedFeed.items, isEqual);
-        state.setFeeds(unionBy([{ ...loadedFeed, items }], state.feeds, 'title'));
+        state.setFeeds(unionBy([{ ...loadedFeed, items, url: feed }], state.feeds, 'title'));
       })
       .catch(console.error)
       .finally(() => state.feedsOnLoading.delete(feed)));

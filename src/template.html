@@ -14,10 +14,25 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav ml-auto">
-      <!-- <form class="form-inline mt-2 mt-md-0 flex-column align-items-stretch align-items-sm-start flex-sm-row">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search">
-        <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Search</button>
-      </form> -->
+        <li class="dropdown w-75 d-none" id="dropdownDelFeedMenu">
+          <div class="nav-link dropdown-toggle" id="dropdownDelFeed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Delete feed
+          </div>
+          <div class="dropdown-menu dropdown-menu-right" id="dropdownDelFeedList" aria-labelledby="dropdownDelFeed">
+          </div>
+        </li>
+        <!-- <li class="dropdown">
+          <div class="nav-link dropdown-toggle" id="dropdownChSpeed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Renew
+          </div>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownChSpeed">
+            <div class="dropdown-item active" href="#">5 sec</div>
+            <div class="dropdown-item">15 sec</div>
+            <div class="dropdown-item">30 sec</div>
+            <div class="dropdown-item">1 min</div>
+            <div class="dropdown-item">5 min</div>
+          </div>
+        </li> -->
       </ul>
     </div>
   </nav>
@@ -31,13 +46,12 @@
             <div data-rss="feedback-error" hidden>
               <div class='text-danger d-flex align-items-center px-2'>
                 <span class="font-weight-light" data-rss="feedback-error-msg">Error</span>
-                <!-- <div class="spinner-grow ml-auto"></div> -->
               </div>
             </div>
             <div data-rss="feedback-info" hidden>
               <div class='text-success d-flex align-items-center px-2'>
                 <span class="font-weight-light" data-rss="feedback-info-msg">Loading...</span>
-                <div class="spinner-border ml-auto"></div>
+                <div class="spinner-grow ml-auto"></div>
               </div>
             </div>
           </div>

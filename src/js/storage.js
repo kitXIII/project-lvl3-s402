@@ -7,4 +7,4 @@ export const loadFeedUrls = () => {
 
 export const saveFeedUrls = urls => localStorage.setItem(STORE_ITEM_NAME, JSON.stringify(urls));
 
-// export const removeFeeds = () => localStorage.removeItem(STORE_ITEM_NAME);
+export const removeFeedUrls = () => localStorage.removeItem(STORE_ITEM_NAME);

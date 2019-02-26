@@ -26,3 +26,16 @@ export const renderFeedItems = (feeds, itemsModalElementId) => {
     .map(item => item.render)
     .join('');
 };
+
+export const renderDelFeedMenu = (feeds) => {
+  if (feeds.length === 0) {
+    return '';
+  }
+  const items = sortBy(feeds.filter(feed => feed.url && feed.title), e => Date.parse(e.pubDate))
+    .reverse()
+    .map(feed => `
+      <div class="dropdown-item text-truncate" data-url="${feed.url}">
+        ${feed.title}
+      </div>`).join('');
+  return `<h6 class="dropdown-header text-danger">To remove feed just click on it!</h6>${items}`;
+};
