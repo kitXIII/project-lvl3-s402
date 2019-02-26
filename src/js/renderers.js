@@ -16,8 +16,8 @@ export const renderFeedItems = (feeds, itemsModalElementId) => {
       render: `
         <div class="d-flex justify-content-between align-items-center py-1">
           <a href="${item.link}">${item.title}</a>
-          <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" data-target="#${itemsModalElementId}" data-channel="${feedIndex}" data-index="${itemIndex}">
-            view
+          <button type="button" class="btn btn-outline-info btn-sm ml-1 rounded-circle" data-toggle="modal" data-target="#${itemsModalElementId}" data-channel="${feedIndex}" data-index="${itemIndex}">
+            <i class="fas fa-glasses"></i>
           </button>
         </div>`,
     }))));

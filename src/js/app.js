@@ -69,9 +69,12 @@ export default () => {
   });
 
   articles.addEventListener('click', (e) => {
-    if (e.target.dataset.channel && e.target.dataset.index) {
-      const { title, description } = state.feeds[e.target.dataset.channel]
-        .items[e.target.dataset.index];
+    const elem = e.target.dataset.toggle === 'modal'
+      ? e.target
+      : e.target.closest('[data-toggle="modal"]');
+    if (elem && elem.dataset.channel && elem.dataset.index) {
+      const { title, description } = state.feeds[elem.dataset.channel]
+        .items[elem.dataset.index];
       state.rssItemsModalContent = { title, description };
     }
   });

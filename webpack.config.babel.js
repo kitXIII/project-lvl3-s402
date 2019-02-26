@@ -1,6 +1,7 @@
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const mode = process.env.NODE_ENV || 'development';
 const isNotProdMode = mode !== 'production';
@@ -19,6 +20,16 @@ export default {
         test: /\.min\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'fonts/',
+          },
+        }],
+      },
     ],
   },
   plugins: [
@@ -26,6 +37,9 @@ export default {
     new HtmlWebpackPlugin({
       template: 'src/template.html',
     }),
+    new CopyPlugin([{
+      from: 'src/img/favicon.ico',
+    }]),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
