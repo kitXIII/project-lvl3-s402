@@ -86,7 +86,6 @@ export default () => {
   });
 
   deleteFeedMenu.addEventListener('click', (e) => {
-    console.log(e.target.dataset.url);
     if (e.target.dataset.url) {
       state.removeFeedByUrl(e.target.dataset.url);
       removeFeedUrls();
@@ -152,16 +151,16 @@ export default () => {
   });
 
   const updateFeeds = () => {
-    const feedsToLoad = difference([...state.addedFeedList], [...state.feedsOnLoading]);
-    feedsToLoad.forEach(feed => state.feedsOnLoading.add(feed));
-    const feedsLoadPromises = feedsToLoad.map(feed => loadFeed(feed)
+    const feedsUrlsToLoad = difference([...state.addedFeedList], [...state.feedsOnLoading]);
+    feedsUrlsToLoad.forEach(url => state.feedsOnLoading.add(url));
+    const feedsLoadPromises = feedsUrlsToLoad.map(url => loadFeed(url)
       .then((loadedFeed) => {
-        const currentFeed = state.feeds.find(e => e.title === loadedFeed.title) || { items: [] };
+        const currentFeed = state.feeds.find(feed => feed.url === url) || { items: [] };
         const items = unionWith(currentFeed.items, loadedFeed.items, isEqual);
-        state.setFeeds(unionBy([{ ...loadedFeed, items, url: feed }], state.feeds, 'title'));
+        state.setFeeds(unionBy([{ ...loadedFeed, items, url }], state.feeds, 'url'));
       })
       .catch(console.error)
-      .finally(() => state.feedsOnLoading.delete(feed)));
+      .finally(() => state.feedsOnLoading.delete(url)));
     return Promise.all(feedsLoadPromises);
   };
 
