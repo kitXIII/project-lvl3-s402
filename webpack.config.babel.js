@@ -1,3 +1,4 @@
+import path from 'path';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -7,6 +8,26 @@ const mode = process.env.NODE_ENV || 'development';
 const isNotProdMode = mode !== 'production';
 
 export default {
+  entry: {
+    bootstrap: [
+      './node_modules/bootstrap/dist/js/bootstrap.js',
+      './node_modules/bootstrap/dist/css/bootstrap.min.css',
+    ],
+    fontawesome: [
+      './node_modules/@fortawesome/fontawesome-free/js/all.js',
+      '@fortawesome/fontawesome-free/css/all.min.css',
+    ],
+    index: './src/index.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   module: {
     rules: [
       {
